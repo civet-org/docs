@@ -11,7 +11,7 @@
 const siteConfig = {
   title: 'Civet', // Title for your website.
   tagline: 'Civet documentation',
-  url: 'https://civet.js.org', // Your website URL
+  url: 'https://civet-org.github.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
