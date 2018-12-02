@@ -11,14 +11,14 @@
 const siteConfig = {
   title: 'Civet', // Title for your website.
   tagline: 'Civet documentation',
-  url: 'https://civet-org.github.io', // Your website URL
+  url: 'https://civet.hatsu.moe', // Your website URL
   baseUrl: '/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  projectName: 'civet-org.github.io',
+  projectName: 'docs',
   organizationName: 'civet-org',
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
