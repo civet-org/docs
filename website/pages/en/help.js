@@ -31,11 +31,11 @@ class Help extends React.Component {
       },
       {
         content: `View the [API Reference](${docUrl("api.html", language)})`,
-        title: "View API Reference"
+        title: "API Reference"
       },
       {
         content: `File an issue on [GitHub](${siteConfig.githubUrl})`,
-        title: "Report a bug"
+        title: "Report a Bug"
       }
     ];
 
