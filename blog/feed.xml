@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Civet Blog</title>
+        <link>https://civet.js.org/blog</link>
+        <description>The best place to stay up-to-date with the latest Civet news and events.</description>
+        <lastBuildDate>Fri, 31 May 2019 06:00:00 GMT</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>Feed for Node.js</generator>
+        <image>
+            <title>Civet Blog</title>
+            <url>https://civet.js.org/img/civet-square-light.png</url>
+            <link>https://civet.js.org/blog</link>
+        </image>
+        <copyright>Copyright © 2019 Aaron Burmeister</copyright>
+        <item>
+            <title><![CDATA[Website launched]]></title>
+            <link>https://civet.js.org/blog/2019/05/31/Website-launched.html</link>
+            <guid>https://civet.js.org/blog/2019/05/31/Website-launched.html</guid>
+            <pubDate>Fri, 31 May 2019 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>Launched the website.</p> ]]></description>
+        </item>
+    </channel>
+</rss>
