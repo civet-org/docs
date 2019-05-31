@@ -13,19 +13,19 @@ The core module provides civet's base functionality.
 
 ## `<ConfigProvider>`
 
-Provides general configuration to its descendants using React's context API.
+Provides general configuration for core components to its descendants using React's context API.
 
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Import-->
-
-```js
-import { ConfigProvider } from "@civet/core";
-```
-
 <!--Usage-->
 
 ```jsx
 <ConfigProvider dataStore={store}>...</ConfigProvider>
+```
+
+<!--Import-->
+
+```js
+import { ConfigProvider } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -51,12 +51,6 @@ import { ConfigProvider } from "@civet/core";
 Context consumer for [`<ConfigProvider>`](#configprovider).
 
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Import-->
-
-```js
-import { ConfigConsumer } from "@civet/core";
-```
-
 <!--Usage-->
 
 ```jsx
@@ -65,26 +59,33 @@ import { ConfigConsumer } from "@civet/core";
 </ConfigConsumer>
 ```
 
+<!--Import-->
+
+```js
+import { ConfigConsumer } from "@civet/core";
+```
+
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 ## `<Resource>`
 
 Makes data from an [`DataStore`](#datastore) available to its descendants using React's context API.
-If not explicitly specified, necessary configuration is taken from the nearest [`<ConfigProvider>`](#configprovider).
+
+Necessary configuration that is not directly specified is taken from the nearest [`<ConfigProvider>`](#configprovider).
 
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Import-->
-
-```js
-import { Resource } from "@civet/core";
-```
-
 <!--Usage-->
 
 ```jsx
 <Resource name="persons" query={{ city: "New York" }}>
   ...
 </Resource>
+```
+
+<!--Import-->
+
+```js
+import { Resource } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -127,18 +128,18 @@ import { Resource } from "@civet/core";
 Context consumer for [`<Resource>`](#resource).
 
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Import-->
-
-```js
-import { ResourceConsumer } from "@civet/core";
-```
-
 <!--Usage-->
 
 ```jsx
 <ResourceConsumer>
   {(context) => ...}
 </ResourceConsumer>
+```
+
+<!--Import-->
+
+```js
+import { ResourceConsumer } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -148,12 +149,6 @@ import { ResourceConsumer } from "@civet/core";
 DataStore base class.
 
 <!--DOCUSAURUS_CODE_TABS-->
-<!--Import-->
-
-```js
-import { DataStore } from "@civet/core";
-```
-
 <!--Usage-->
 
 ```js
@@ -162,6 +157,14 @@ class CustomStore extends DataStore {
     return ...;
   }
 }
+
+const store = new CustomStore();
+```
+
+<!--Import-->
+
+```js
+import { DataStore } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -249,3 +252,60 @@ recycleItems(nextData, prevData) {
   return result;
 }
 ```
+
+## `isDataStore`
+
+Identifies [`DataStore`](#datastore) instances.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+const ds = new DataStore();
+
+if (!isDataStore(ds)) {
+  throw new Error("Should be a DataStore instance");
+}
+```
+
+<!--Import-->
+
+```js
+import { isDataStore } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+| Name      | Type  | Description              |
+| --------- | ----- | ------------------------ |
+| dataStore | `any` | The object to be checked |
+
+### Return type
+
+| Type      | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| `boolean` | Whether `dataStore` is an instance of [`DataStore`](#datastore) |
+
+## `dataStorePropType`
+
+PropType for [`DataStore`](#datastore) instances.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+const propTypes = {
+  optional: dataStorePropType,
+  required: dataStorePropType.isRequired
+};
+```
+
+<!--Import-->
+
+```js
+import { dataStorePropType } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
