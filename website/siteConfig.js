@@ -18,7 +18,7 @@ const siteConfig = {
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  cname: "civet-org.github.io",
+  // cname: "civet-org.github.io",
   projectName: "docs",
   organizationName: "civet-org",
   // For top-level user or org sites, the organization is still the same.
