@@ -11,14 +11,14 @@
 const siteConfig = {
   title: "Civet", // Title for your website.
   tagline: "Painless data integration in your React application",
-  url: "https://civet.hatsu.moe", // Your website URL
+  url: "https://civet.js.org", // Your website URL
   baseUrl: "/", // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  cname: "civet.hatsu.moe",
+  cname: "civet.js.org",
   projectName: "docs",
   organizationName: "civet-org",
   // For top-level user or org sites, the organization is still the same.
