@@ -69,7 +69,7 @@ import { ConfigConsumer } from "@civet/core";
 
 ## `<Resource>`
 
-Makes data from an [`DataStore`](#datastore) available to its descendants using React's context API.
+Makes data from an [`DataStore`](#datastore) available to its descendants using a [`<ResourceProvider>`](#resourceprovider).
 
 Necessary configuration that is not directly specified is taken from the nearest [`<ConfigProvider>`](#configprovider).
 
@@ -104,6 +104,41 @@ import { Resource } from "@civet/core";
 
 ### Context
 
+See [`<ResourceProvider>`](#resourceprovider)
+
+### Related
+
+[`<ResourceProvider>`](#resourceprovider), [`<ResourceConsumer>`](#resourceconsumer)
+
+## `<ResourceProvider>`
+
+Provides resource context to its descendants using React's context API.
+
+In most cases you should use [`<Resource>`](#resource) instead.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```jsx
+<ResourceProvider value={resourceContext}>...</ResourceProvider>
+```
+
+<!--Import-->
+
+```js
+import { ResourceProvider } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Props
+
+| Name  | Type     | Description      |
+| ----- | -------- | ---------------- |
+| value | `object` | Resource context |
+
+### Context
+
 | Name      | Type                      | Description                                                                                       |
 | --------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
 | name      | `string`                  | Resource name                                                                                     |
@@ -122,11 +157,11 @@ import { Resource } from "@civet/core";
 
 ### Related
 
-[`<ResourceConsumer>`](#resourceconsumer)
+[`<Resource>`](#resource), [`<ResourceConsumer>`](#configconsumer)
 
 ## `<ResourceConsumer>`
 
-Context consumer for [`<Resource>`](#resource).
+Context consumer for [`<ResourceProvider>`](#resourceprovider).
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Usage-->
