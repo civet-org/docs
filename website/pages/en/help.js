@@ -23,19 +23,19 @@ class Help extends React.Component {
     const language = this.props.language || "";
     const supportLinks = [
       {
-        content: `Learn more using the [documentation on this site.](${docUrl(
+        content: `Learn more using the [documentation](${docUrl(
           "getting-started.html",
           language
         )})`,
         title: "Browse Docs"
       },
       {
-        content: "Ask questions about the documentation and project",
-        title: "Join the community"
+        content: `View the [API Reference](${docUrl("api.html", language)})`,
+        title: "View API Reference"
       },
       {
-        content: "Find out what's new with this project",
-        title: "Stay up to date"
+        content: `File an issue on [GitHub](${siteConfig.githubUrl})`,
+        title: "Report a bug"
       }
     ];
 
@@ -46,7 +46,7 @@ class Help extends React.Component {
             <header className="postHeader">
               <h1>Need help?</h1>
             </header>
-            <p>This project is maintained by a dedicated group of people.</p>
+            {/* <p>This project is maintained by a dedicated group of people.</p> */}
             <GridBlock contents={supportLinks} layout="threeColumn" />
           </div>
         </Container>
