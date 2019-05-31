@@ -113,6 +113,7 @@ import { Resource } from "@civet/core";
 | dataStore | [`DataStore`](#datastore) | [`DataStore`](#datastore) to be used for requests                                                 |
 | request   | `string`                  | Unique identifier for the current request                                                         |
 | data      | `any[]`                   | The actual data                                                                                   |
+| meta      | `object`                  | Metadata                                                                                          |
 | error     | `Error` &#124; `boolean`  | Error information about the most recent request, or `true` if no further information is available |
 | isEmpty   | `boolean`                 | Whether fetching data is prevented                                                                |
 | isLoading | `boolean`                 | Whether another query is currently being executed                                                 |
@@ -153,7 +154,7 @@ DataStore base class.
 
 ```js
 class CustomStore extends DataStore {
-  handleGet(resource, ids, query, options) {
+  handleGet(resource, ids, query, options, meta) {
     return ...;
   }
 }
@@ -171,26 +172,26 @@ import { DataStore } from "@civet/core";
 
 ### Class members
 
-| Name         | Arguments                                                                          | Return Type               | Description                                                                          |
-| ------------ | ---------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| subscribe    | resourceName: `string`, handler: `() => void`                                      | unsubscribe: `() => void` | Subscribe to data change notifications                                               |
-| notify       | resourceName: `string`                                                             | `void`                    | Notify data changes                                                                  |
-| get          | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`              | `Promise<any[]>`          | Get data (uses `handleGet` internally)                                               |
-| create       | resourceName: `string`, data: `any`, options: `object`                             | `Promise<void>`           | Create data (uses `handleCreate` internally)                                         |
-| update       | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object` | `Promise<void>`           | Update data (uses `handleUpdate` internally)                                         |
-| patch        | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object` | `Promise<void>`           | Patch data (uses `handlePatch` internally)                                           |
-| remove       | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`              | `Promise<void>`           | Remove data (uses `handleRemove` internally)                                         |
-| recycleItems | nextData: `any[]`, prevData: `any[]`                                               | `any[]`                   | Recycle unchanged items to prevent unneeded rerenders (see caveats for more details) |
+| Name         | Arguments                                                                                                                 | Return Type               | Description                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
+| subscribe    | resourceName: `string`, handler: `() => void`                                                                             | unsubscribe: `() => void` | Subscribe to data change notifications                                               |
+| notify       | resourceName: `string`                                                                                                    | `void`                    | Notify data changes                                                                  |
+| get          | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)              | `Promise<any[]>`          | Get data (uses `handleGet` internally)                                               |
+| create       | resourceName: `string`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                             | `Promise<void>`           | Create data (uses `handleCreate` internally)                                         |
+| update       | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta) | `Promise<void>`           | Update data (uses `handleUpdate` internally)                                         |
+| patch        | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta) | `Promise<void>`           | Patch data (uses `handlePatch` internally)                                           |
+| remove       | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)              | `Promise<void>`           | Remove data (uses `handleRemove` internally)                                         |
+| recycleItems | nextData: `any[]`, prevData: `any[]`                                                                                      | `any[]`                   | Recycle unchanged items to prevent unneeded rerenders (see caveats for more details) |
 
 ### Abstract members
 
-| Name         | Arguments                                                                          | Return Type                     | Description |
-| ------------ | ---------------------------------------------------------------------------------- | ------------------------------- | ----------- |
-| handleGet    | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`              | `any[]` &#124; `Promise<any[]>` |             |
-| handleCreate | resourceName: `string`, data: `any`, options: `object`                             | `void` &#124; `Promise<void>`   |             |
-| handleUpdate | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object` | `void` &#124; `Promise<void>`   |             |
-| handlePatch  | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object` | `void` &#124; `Promise<void>`   |             |
-| handleRemove | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`              | `void` &#124; `Promise<void>`   |             |
+| Name         | Arguments                                                                                                 | Return Type                     | Description |
+| ------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
+| handleGet    | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `any[]` &#124; `Promise<any[]>` |             |
+| handleCreate | resourceName: `string`, data: `any`, options: `object`, meta: [`Meta`](#meta)                             | `void` &#124; `Promise<void>`   |             |
+| handleUpdate | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`   |             |
+| handlePatch  | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`   |             |
+| handleRemove | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `void` &#124; `Promise<void>`   |             |
 
 ### Caveats
 
@@ -309,3 +310,59 @@ import { dataStorePropType } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
+
+## `Meta`
+
+Metadata key value map.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+// Basic usage
+const meta = new Meta();
+meta.set("test", 1);
+const result = meta.commit();
+console.log(result.test);
+
+// Meta can be based on an existing object
+const base = {};
+const baseMeta = new Meta(base);
+baseMeta.set("test", 1);
+assert(base.test === baseMeta.get("test"));
+
+// Meta can handle basic immutability
+const previousMeta = { a: 1 };
+const unchanged = new Meta({ a: 1 });
+const changed = new Meta({ a: 2 });
+assert(previousMeta === unchanged.commit(previousMeta));
+assert(previousMeta !== changed.commit(previousMeta));
+```
+
+<!--Import-->
+
+```js
+import { Meta } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Constructor
+
+| Arguments      | Description                                    |
+| -------------- | ---------------------------------------------- |
+| base: `object` | All changes get applied to `base` if it is set |
+
+### Class members
+
+| Name    | Arguments                   | Return Type                     | Description                                                                                                                                       |
+| ------- | --------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| clear   |                             | `void`                          | Delete all keys from the object                                                                                                                   |
+| delete  | key: `string`               | `any`                           | Delete the specified key from the object - returns the deleted value                                                                              |
+| entries |                             | `([key: string, value: any])[]` | Get all entries from the object                                                                                                                   |
+| get     | key: `string`               | `any`                           | Get the value for the specified key from the object                                                                                               |
+| has     | key: `string`               | `boolean`                       | Check if the object has a value for the specified key                                                                                             |
+| keys    |                             | `string[]`                      | Get all keys from the object                                                                                                                      |
+| set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                               |
+| values  |                             | `any[]`                         | Get all values from the object                                                                                                                    |
+| commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a copy of the current value, or `prev` if it is set and matches the current object by value |
