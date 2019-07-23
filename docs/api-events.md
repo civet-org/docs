@@ -47,7 +47,7 @@ import { ConfigProvider } from "@civet/events";
 
 ### Related
 
-[`<ConfigConsumer>`](#configconsumer), [`<EventHandler>`](#eventhandler)
+[`<ConfigConsumer>`](#configconsumer), [`<EventHandler>`](#eventhandler), [`useConfigContext`](#useconfigcontext)
 
 ## `<ConfigConsumer>`
 
@@ -66,6 +66,25 @@ Context consumer for [`<ConfigProvider>`](#configprovider).
 
 ```js
 import { ConfigConsumer } from "@civet/events";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+## `useConfigContext`
+
+Context hook for [`<ConfigProvider>`](#configprovider).
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+const configContext = useConfigContext();
+```
+
+<!--Import-->
+
+```js
+import { useConfigContext } from "@civet/events";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
@@ -101,7 +120,7 @@ import { EventHandler } from "@civet/events";
 | Name          | Type                              | Description                                                                                                                                          |
 | ------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | eventReceiver | [`EventReceiver`](#eventreceiver) | [`EventReceiver`](#eventreceiver) to be used                                                                                                         |
-| resource      | `object`                          | Resource context to be used                                                                                                                          |
+| resource      | `object`                          | [Resource context](api-core.md#resourceprovider) to be used                                                                                          |
 | options       | `object`                          | [`EventReceiver`](#eventreceiver) options                                                                                                            |
 | onEvent       | `(event: any) => boolean`         | Callback to filter events and handle your own event logic - if `true` is returned, the event is considered as handled and the resource is not update |
 

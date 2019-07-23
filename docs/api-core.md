@@ -44,7 +44,7 @@ import { ConfigProvider } from "@civet/core";
 
 ### Related
 
-[`<ConfigConsumer>`](#configconsumer), [`<Resource>`](#resource)
+[`<ConfigConsumer>`](#configconsumer), [`<Resource>`](#resource), [`useConfigContext`](#useconfigcontext)
 
 ## `<ConfigConsumer>`
 
@@ -66,6 +66,35 @@ import { ConfigConsumer } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
+
+## `useConfigContext`
+
+Context hook for [`<ConfigProvider>`](#configprovider).
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+const configContext = useConfigContext();
+```
+
+<!--Import-->
+
+```js
+import { useConfigContext } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+None
+
+### Return type
+
+| Type      | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| `object` | [Config context](#configprovider) |
 
 ## `<Resource>`
 
@@ -108,7 +137,7 @@ See [`<ResourceProvider>`](#resourceprovider)
 
 ### Related
 
-[`<ResourceProvider>`](#resourceprovider), [`<ResourceConsumer>`](#resourceconsumer)
+[`<ResourceProvider>`](#resourceprovider), [`<ResourceConsumer>`](#resourceconsumer), [`useResourceContext`](#useresourcecontext)
 
 ## `<ResourceProvider>`
 
@@ -157,7 +186,7 @@ import { ResourceProvider } from "@civet/core";
 
 ### Related
 
-[`<Resource>`](#resource), [`<ResourceConsumer>`](#configconsumer)
+[`<Resource>`](#resource), [`<ResourceConsumer>`](#configconsumer), [`useResourceContext`](#useresourcecontext)
 
 ## `<ResourceConsumer>`
 
@@ -179,6 +208,35 @@ import { ResourceConsumer } from "@civet/core";
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
+
+## `useResourceContext`
+
+Context hook for [`<ResourceProvider>`](#resourceprovider).
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+const resourceContext = useResourceContext();
+```
+
+<!--Import-->
+
+```js
+import { useResourceContext } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+None
+
+### Return type
+
+| Type      | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| `object` | [Resource context](#resourceprovider) |
 
 ## `DataStore`
 
