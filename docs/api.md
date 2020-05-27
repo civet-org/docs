@@ -1,6 +1,7 @@
 ---
 id: api
 title: Introduction
+sidebar_label: Introduction
 ---
 
 # [Core](api-core.md)

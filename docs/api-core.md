@@ -1,6 +1,7 @@
 ---
 id: api-core
 title: Core
+sidebar_label: Core
 ---
 
 [NPM](https://npmjs.com/package/@civet/core) | [GitHub](https://github.com/civet-org/core)
@@ -92,8 +93,8 @@ None
 
 ### Return type
 
-| Type      | Description                                                     |
-| --------- | --------------------------------------------------------------- |
+| Type     | Description                       |
+| -------- | --------------------------------- |
 | `object` | [Config context](#configprovider) |
 
 ## `<Resource>`
@@ -234,8 +235,8 @@ None
 
 ### Return type
 
-| Type      | Description                                                     |
-| --------- | --------------------------------------------------------------- |
+| Type     | Description                           |
+| -------- | ------------------------------------- |
 | `object` | [Resource context](#resourceprovider) |
 
 ## `DataStore`
@@ -392,7 +393,7 @@ PropType for [`DataStore`](#datastore) instances.
 ```js
 const propTypes = {
   optional: dataStorePropType,
-  required: dataStorePropType.isRequired
+  required: dataStorePropType.isRequired,
 };
 ```
 

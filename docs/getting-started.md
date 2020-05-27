@@ -1,6 +1,7 @@
 ---
 id: getting-started
 title: Installation
+sidebar_label: Installation
 ---
 
 The Civet modules are published on [NPM](https://www.npmjs.com/org/civet).  

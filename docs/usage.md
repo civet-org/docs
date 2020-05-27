@@ -1,6 +1,7 @@
 ---
 id: usage
 title: Usage
+sidebar_label: Usage
 ---
 
 Here is a basic example of how to use Civet.

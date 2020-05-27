@@ -1,6 +1,7 @@
 ---
 id: api-events
 title: Events
+sidebar_label: Events
 ---
 
 [NPM](https://npmjs.com/package/@civet/events) | [GitHub](https://github.com/civet-org/events)
@@ -102,7 +103,10 @@ You can specify which events should lead to an update by either passing `options
 <!--Usage-->
 
 ```jsx
-<EventHandler options={{ some: 'options' }} onEvent={(e) => console.log('Received', e)}>
+<EventHandler
+  options={{ some: "options" }}
+  onEvent={(e) => console.log("Received", e)}
+>
   ...
 </Resource>
 ```
@@ -251,7 +255,7 @@ PropType for [`EventReceiver`](#eventreceiver) instances.
 ```js
 const propTypes = {
   optional: eventReceiverPropType,
-  required: eventReceiverPropType.isRequired
+  required: eventReceiverPropType.isRequired,
 };
 ```
 
