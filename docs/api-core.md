@@ -239,9 +239,65 @@ None
 | -------- | ------------------------------------- |
 | `object` | [Resource context](#resourceprovider) |
 
-## `DataStore`
+## `BaseDataStore`
 
 DataStore base class.
+
+When implementing your own DataStore, usually you would prefer [`DataStore`](#datastore) over this class, as it already provides some general implementations.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Import-->
+
+```js
+import { BaseDataStore } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Class members
+
+| Name          | Arguments                                                                                                                                                                                                                  | Return Type               | Description                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| subscribe     | resourceName: `string`, handler: `() => void`                                                                                                                                                                              | unsubscribe: `() => void` | Subscribe to data change notifications                                                                            |
+| notify        | resourceName: `string`                                                                                                                                                                                                     | `void`                    | Notify data changes                                                                                               |
+| get           | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                               | `Promise<any[]>`          | Get data (at once &#124; uses `handleGet` internally)                                                             |
+| continuousGet | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta), callback: `(error: any, complete: boolean, data: any[]) => void`, abortSignal: [`AbortSignal`](#abortsignal) | `void`                    | Get data (continuously &#124; uses `handleGet` internally)                                                        |
+| create        | resourceName: `string`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                                              | `Promise<void>`           | Create data (uses `handleCreate` internally)                                                                      |
+| update        | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                  | `Promise<void>`           | Update data (uses `handleUpdate` internally)                                                                      |
+| patch         | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                  | `Promise<void>`           | Patch data (uses `handlePatch` internally)                                                                        |
+| remove        | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                               | `Promise<void>`           | Remove data (uses `handleRemove` internally)                                                                      |
+| transition    | nextData: `any[]`, prevData: `any[]`, context: `object`, prevContext: `object`                                                                                                                                             | `any[]`                   | Transition between the previous and current `data` array (see caveats for more details)                           |
+| recycleItems  | nextData: `any[]`, prevData: `any[]`, context: `object`, prevContext: `object`                                                                                                                                             | `any[]`                   | Recycle unchanged items to prevent unneeded rerenders (see caveats of [`DataStore`](#datastore) for more details) |
+
+### Abstract members
+
+| Name         | Arguments                                                                                                 | Return Type                                                                                                                                 | Description                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| handleGet    | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `any[]` &#124; `Promise<any[]>` &#124; `(callback: (error: any, complete: boolean, data: any[]) => void, abortSignal: AbortSignal) => void` | A callback function can be returned to support continuous gets (see caveats for more details) |
+| handleCreate | resourceName: `string`, data: `any`, options: `object`, meta: [`Meta`](#meta)                             | `void` &#124; `Promise<void>`                                                                                                               |                                                                                               |
+| handleUpdate | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`                                                                                                               |                                                                                               |
+| handlePatch  | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`                                                                                                               |                                                                                               |
+| handleRemove | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `void` &#124; `Promise<void>`                                                                                                               |                                                                                               |
+
+### Caveats
+
+#### Abstract functions
+
+The functions `get`, `create`, ... internally invoke their corresponding abstract counterparts `handle...` and perform generic validation on their parameters and return values. Therefore, you should not just override them, but implement the abstract `handle...` methods instead.
+
+#### continuousGet & transitioning
+
+`dataStore.get` resolves when the complete data is collected.
+This is fine when resolving the data is really fast but can be troublesome when you want to load large data sets e.g. from a backend over a slow internet connection.
+You can implement your DataStore to support continuous data fetching by returning a callback function from `handleGet` rather than the data itself.
+This allows you to forward partial data to the Resource component (or other compatible clients) even if the fetch has not yet been completed.
+
+It can be helpful to allow a transition between several updates of the component, e.g. to keep the order of the elements while the retrieval is still running.
+The `Resource` component supports this by calling the `DataStore`'s `transition` method each time it resolves new data. The function is called before `recycleItems`, so you don't have to worry about it when implementing the transition.
+
+## `DataStore`
+
+Default DataStore implementation (based on [`BaseDataStore`](#basedatastore)).
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Usage-->
@@ -266,40 +322,20 @@ import { DataStore } from "@civet/core";
 
 ### Class members
 
-| Name         | Arguments                                                                                                                 | Return Type               | Description                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| subscribe    | resourceName: `string`, handler: `() => void`                                                                             | unsubscribe: `() => void` | Subscribe to data change notifications                                               |
-| notify       | resourceName: `string`                                                                                                    | `void`                    | Notify data changes                                                                  |
-| get          | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)              | `Promise<any[]>`          | Get data (uses `handleGet` internally)                                               |
-| create       | resourceName: `string`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                             | `Promise<void>`           | Create data (uses `handleCreate` internally)                                         |
-| update       | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta) | `Promise<void>`           | Update data (uses `handleUpdate` internally)                                         |
-| patch        | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta) | `Promise<void>`           | Patch data (uses `handlePatch` internally)                                           |
-| remove       | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)              | `Promise<void>`           | Remove data (uses `handleRemove` internally)                                         |
-| recycleItems | nextData: `any[]`, prevData: `any[]`                                                                                      | `any[]`                   | Recycle unchanged items to prevent unneeded rerenders (see caveats for more details) |
-
-### Abstract members
-
-| Name         | Arguments                                                                                                 | Return Type                     | Description |
-| ------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
-| handleGet    | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `any[]` &#124; `Promise<any[]>` |             |
-| handleCreate | resourceName: `string`, data: `any`, options: `object`, meta: [`Meta`](#meta)                             | `void` &#124; `Promise<void>`   |             |
-| handleUpdate | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`   |             |
-| handlePatch  | resourceName: `string`, ids: `any[]`, query: `any`, data: `any`, options: `object`, meta: [`Meta`](#meta) | `void` &#124; `Promise<void>`   |             |
-| handleRemove | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: [`Meta`](#meta)              | `void` &#124; `Promise<void>`   |             |
+| Name                        | Arguments                        | Return Type | Description                                                                                                                                           |
+| --------------------------- | -------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recycleItemsCompareIdentity | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if `nextItem` and `prevItem` reference the same item. (You can do so by comparing IDs or similar if available)                          |
+| recycleItemsIsUnchanged     | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if the item was not changed at all, e.g. both versions are completely equal. (You can do so by comparing ETags or similar if available) |
 
 ### Caveats
-
-#### Abstract functions
-
-The functions `get`, `create`, ... internally invoke their corresponding abstract counterparts `handle...` and perform generic validation on their parameters and return values. Therefore, you should not just override them, but implement the abstract `handle...` methods instead.
 
 #### recycleItems
 
 React offers tools to avoid unnecessary component updates, including `React.Component.shouldComponentUpdate`, `React.PureComponent` and `React.memo`.
 These tools check whether the props of a component have changed since the previous render to determine if the component needs to be updated again.
 The fastest way to do this would be to use JavaScript's identity operator `===`.
-This operator works great for primitives like strings or numbers, but doesn't work like expected with objects and arrays.
-This is because it does not compare the value of the variables, but its memory addresses. See the example below:
+This operator works great for primitives like strings or numbers, but doesn't work like we would expect it to with objects and arrays.
+This is because objects and arrays (which in fact are objects as well) are compared by their memory addresses instead of their contents. See the example below:
 
 ```js
 const a = { x: 1 };
@@ -324,29 +360,7 @@ As a result, the following checks should succeed:
   - else (even if it was reordered in the array): `prevItem === nextItem`
 
 However, the default implementation may be expensive in regard to performance as it deeply compares each item by value.
-This is why, if possible, you should override it with a faster approach like the following:
-
-```js
-// uses IDs and eTags instead of comparing by value
-recycleItems(nextData, prevData) {
-  const prevItems = [...prevData];
-  const result = nextData.map(nextItem => {
-    const i = prevItems.findIndex(item => item.id === nextItem.id);
-    if (i >= 0) {
-      const [prevItem] = prevItems.splice(i, 1);
-      if (nextItem.eTag != null && prevItem.eTag === nextItem.eTag) return prevItem;
-    }
-    return nextItem;
-  });
-  if (
-    prevData.length === result.length &&
-    result.reduce((sum, item, i) => sum && prevData[i] === item, true)
-  ) {
-    return prevData;
-  }
-  return result;
-}
-```
+This is why, if possible, you should improve it with a faster comparing approach by overriding the methods `recycleItemsCompareIdentity` and `recycleItemsIsUnchanged`. You can also completely ditch the default implementation by implementing your own version of `recycleItems`.
 
 ## `isDataStore`
 
@@ -405,6 +419,48 @@ import { dataStorePropType } from "@civet/core";
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
+## `AbortSignal`
+
+Interface for listening for abort requests.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+// Basic usage
+const signal = new AbortSignal();
+signal.listen(() => {
+  console.log("Request has been aborted");
+});
+signal.abort();
+signal.listen(() => {
+  console.log(
+    "This will be called immediately, as signal has already been aborted"
+  );
+});
+
+// The signal can be locked if it is now longer allowed to be aborted
+const signal = new AbortSignal();
+signal.lock();
+signal.abort(); // No listeners will be notified since the signal is already locked
+```
+
+<!--Import-->
+
+```js
+import { AbortSignal } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Class members
+
+| Name   | Arguments              | Return Type               | Description                                           |
+| ------ | ---------------------- | ------------------------- | ----------------------------------------------------- |
+| listen | listener: `() => void` | unsubscribe: `() => void` | Listen for abort signals                              |
+| abort  |                        | `void`                    | Abort the signal                                      |
+| lock   |                        | `void`                    | Lock the signal (The signal can no longer be aborted) |
+
 ## `Meta`
 
 Metadata key value map.
@@ -460,3 +516,63 @@ import { Meta } from "@civet/core";
 | set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                               |
 | values  |                             | `any[]`                         | Get all values from the object                                                                                                                    |
 | commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a copy of the current value, or `prev` if it is set and matches the current object by value |
+
+## `createPlugin`
+
+Creates a plugin from the provided configuration function.
+
+This allows you to extend DataStores and / or Resource components by custom functionality.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```jsx
+const plugin = createPlugin((Store, extend) => {
+  class ExtendedStore extends Store {
+    addedFunctionality() {
+      return "...";
+    }
+  }
+
+  function ResourcePlugin({ ...props, context, children }) {
+    return (
+      <ReactComponent>
+        {children({ ...context, extendedContext: true })}
+      </ReactComponent>
+    );
+  }
+
+  extend.resource(ResourcePlugin);
+
+  return ExtendedStore;
+});
+
+const DataStoreWithPlugin = plugin(SomeDataStore);
+```
+
+<!--Import-->
+
+```js
+import { createPlugin } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+| Name             | Type                                                                                                 | Description           |
+| ---------------- | ---------------------------------------------------------------------------------------------------- | --------------------- |
+| pluginDefinition | `(BaseDataStore, extend: { resource: (ResourcePlugin) => void }) => void` &#124; `ExtendedDataStore` | The plugin definition |
+
+### Return type
+
+| Type                       | Description                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `(DataStore) => DataStore` | A plugin function which creates a modified version of the provided [`DataStore`](#datastore) with the plugin functionality |
+
+### Caveats
+
+#### Independence
+
+All plugins should be independent of each other.
+It should be noted that the order in which the individual plugins are executed is not guaranteed.
