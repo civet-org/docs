@@ -419,9 +419,159 @@ import { dataStorePropType } from "@civet/core";
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
+## `createPlugin`
+
+Creates a plugin from the provided configuration function.
+
+This allows you to extend DataStores and / or Resource components by custom functionality.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```jsx
+const plugin = createPlugin((Store, extend) => {
+  class ExtendedStore extends Store {
+    addedFunctionality() {
+      return "...";
+    }
+  }
+
+  function ResourcePlugin({ ...props, context, children }) {
+    return (
+      <ReactComponent>
+        {children({ ...context, extendedContext: true })}
+      </ReactComponent>
+    );
+  }
+
+  extend.resource(ResourcePlugin);
+
+  return ExtendedStore;
+});
+
+const DataStoreWithPlugin = plugin(SomeDataStore);
+```
+
+<!--Import-->
+
+```js
+import { createPlugin } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+| Name             | Type                                                                                                 | Description           |
+| ---------------- | ---------------------------------------------------------------------------------------------------- | --------------------- |
+| pluginDefinition | `(BaseDataStore, extend: { resource: (ResourcePlugin) => void }) => void` &#124; `ExtendedDataStore` | The plugin definition |
+
+### Return type
+
+| Type                       | Description                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `(DataStore) => DataStore` | A plugin function which creates a modified version of the provided [`DataStore`](#datastore) with the plugin functionality |
+
+### Caveats
+
+#### Independence
+
+All plugins should be independent of each other.
+It should be noted that the order in which the individual plugins are executed is not guaranteed.
+
+## `Notifier`
+
+Interface for handling client side notification events.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+// Basic usage
+const notifier = new Notifier();
+function handler() {
+  console.log("Subscriber was notified");
+}
+const unsubscribeHandler = notifier.subscribe(handler);
+console.log(notifier.isSubscribed(handler)); // true
+notifier.trigger();
+unsubscribeHandler();
+console.log(notifier.isSubscribed(handler)); // false
+
+// You can pass arguments to the handlers
+const notifier = new Notifier();
+notifier.subscribe((a, b, c) => {
+  console.log("Notified:", a, b, c);
+});
+notifier.trigger(true, 2, "test");
+```
+
+<!--Import-->
+
+```js
+import { Notifier } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Class members
+
+| Name         | Arguments                         | Return Type               | Description                                                          |
+| ------------ | --------------------------------- | ------------------------- | -------------------------------------------------------------------- |
+| subscribe    | handler: `(...args: any) => void` | unsubscribe: `() => void` | Subscribe to notifications                                           |
+| isSubscribed | handler: `(...args: any) => void` | `boolean`                 | Whether the provided handler is currently subscribed to the notifier |
+| trigger      | `...args: any`                    | `void`                    | Notify all currently subscribed handlers                             |
+
+## `ChannelNotifier`
+
+[`Notifier`](#notifier) that supports multiple separate event channels.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```js
+// Basic usage
+const notifier = new ChannelNotifier();
+function handler() {
+  console.log("Subscriber was notified");
+}
+const unsubscribeHandlerFromChA = notifier.subscribe("channel-a", handler);
+console.log(notifier.isSubscribed("channel-a", handler)); // true
+console.log(notifier.isSubscribed("channel-b", handler)); // false
+notifier.trigger("channel-a"); // Only notify channel a
+notifier.trigger(); // Notify all channels
+unsubscribeHandlerFromChA();
+console.log(notifier.isSubscribed("channel-a", handler)); // false
+
+// You can pass arguments to the handlers
+const notifier = new Notifier();
+notifier.subscribe("channel-a", (a, b, c) => {
+  console.log("Notified:", a, b, c);
+});
+notifier.trigger("channel-a", true, 2, "test"); // Notify all channels
+notifier.trigger(null, true, 2, "test"); // Notify all channels
+// Please note that the channel name is not passed to handlers by default.
+```
+
+<!--Import-->
+
+```js
+import { ChannelNotifier } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Class members
+
+| Name         | Arguments                                          | Return Type               | Description                                                                                                                         |
+| ------------ | -------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| subscribe    | handler: `(channel: string, ...args: any) => void` | unsubscribe: `() => void` | Subscribe to notifications on the specified channel                                                                                 |
+| isSubscribed | handler: `(channel: string, ...args: any) => void` | `boolean`                 | Whether the provided handler is currently subscribed to the specified channel                                                       |
+| trigger      | `channel: string, ...args: any`                    | `void`                    | Notify all handlers currently subscribed to the specified channel (Set the channel to `undefined` or `null` to notify all channels) |
+
 ## `AbortSignal`
 
-Interface for listening for abort requests.
+Interface for handling abort requests.
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Usage-->
@@ -516,63 +666,3 @@ import { Meta } from "@civet/core";
 | set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                               |
 | values  |                             | `any[]`                         | Get all values from the object                                                                                                                    |
 | commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a copy of the current value, or `prev` if it is set and matches the current object by value |
-
-## `createPlugin`
-
-Creates a plugin from the provided configuration function.
-
-This allows you to extend DataStores and / or Resource components by custom functionality.
-
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Usage-->
-
-```jsx
-const plugin = createPlugin((Store, extend) => {
-  class ExtendedStore extends Store {
-    addedFunctionality() {
-      return "...";
-    }
-  }
-
-  function ResourcePlugin({ ...props, context, children }) {
-    return (
-      <ReactComponent>
-        {children({ ...context, extendedContext: true })}
-      </ReactComponent>
-    );
-  }
-
-  extend.resource(ResourcePlugin);
-
-  return ExtendedStore;
-});
-
-const DataStoreWithPlugin = plugin(SomeDataStore);
-```
-
-<!--Import-->
-
-```js
-import { createPlugin } from "@civet/core";
-```
-
-<!--END_DOCUSAURUS_CODE_TABS-->
-
-### Function arguments
-
-| Name             | Type                                                                                                 | Description           |
-| ---------------- | ---------------------------------------------------------------------------------------------------- | --------------------- |
-| pluginDefinition | `(BaseDataStore, extend: { resource: (ResourcePlugin) => void }) => void` &#124; `ExtendedDataStore` | The plugin definition |
-
-### Return type
-
-| Type                       | Description                                                                                                                |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `(DataStore) => DataStore` | A plugin function which creates a modified version of the provided [`DataStore`](#datastore) with the plugin functionality |
-
-### Caveats
-
-#### Independence
-
-All plugins should be independent of each other.
-It should be noted that the order in which the individual plugins are executed is not guaranteed.
