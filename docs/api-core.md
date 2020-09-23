@@ -479,6 +479,40 @@ import { createPlugin } from "@civet/core";
 All plugins should be independent of each other.
 It should be noted that the order in which the individual plugins are executed is not guaranteed.
 
+## `compose`
+
+Composes the specified single-argument functions from right to left.
+
+This can be especially useful when applying multiple plugins to a DataStore.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Usage-->
+
+```jsx
+const DataStoreWithPlugins = compose(pluginA, pluginB, pluginC)(SomeDataStore);
+// This is the same as: pluginA(pluginB(pluginC(SomeDataStore)))
+```
+
+<!--Import-->
+
+```js
+import { compose } from "@civet/core";
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Function arguments
+
+| Name   | Type              | Description                  |
+| ------ | ----------------- | ---------------------------- |
+| ...fns | `(a: any) => any` | The functions to be composed |
+
+### Return type
+
+| Type              | Description            |
+| ----------------- | ---------------------- |
+| `(a: any) => any` | The composed functions |
+
 ## `Notifier`
 
 Interface for handling client side notification events.
