@@ -4,13 +4,13 @@ title: Introduction
 sidebar_label: Introduction
 ---
 
-# [Core](api-core.md)
+## [Core](api-core.md)
 
 [NPM](https://npmjs.com/package/@civet/core) | [GitHub](https://github.com/civet-org/core)
 
 The core module provides civet's base functionality.
 
-# [Events](api-events.md)
+## [Events](api-events.md)
 
 [NPM](https://npmjs.com/package/@civet/events) | [GitHub](https://github.com/civet-org/events)
 

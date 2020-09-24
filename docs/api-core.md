@@ -268,6 +268,7 @@ import { BaseDataStore } from "@civet/core";
 | remove        | resourceName: `string`, ids: `any[]`, query: `any`, options: `object`, meta: `object` &#124; [`Meta`](#meta)                                                                                                               | `Promise<void>`           | Remove data (uses `handleRemove` internally)                                                                      |
 | transition    | nextData: `any[]`, prevData: `any[]`, context: `object`, prevContext: `object`                                                                                                                                             | `any[]`                   | Transition between the previous and current `data` array (see caveats for more details)                           |
 | recycleItems  | nextData: `any[]`, prevData: `any[]`, context: `object`, prevContext: `object`                                                                                                                                             | `any[]`                   | Recycle unchanged items to prevent unneeded rerenders (see caveats of [`DataStore`](#datastore) for more details) |
+| extend        | `{ resource: (resourcePlugin: ReactComponent) => void }`                                                                                                                                                                   | `void`                    | Extend Civet with custom functionality (see [Extending Civet](guides-extending.md#datastore) for more details)    |
 
 ### Abstract members
 
@@ -423,30 +424,34 @@ import { dataStorePropType } from "@civet/core";
 
 Creates a plugin from the provided configuration function.
 
-This allows you to extend DataStores and / or Resource components by custom functionality.
+See [Extending Civet](guides-extending.md#plugins) for further information.
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Usage-->
 
 ```jsx
-const plugin = createPlugin((Store, extend) => {
-  class ExtendedStore extends Store {
-    addedFunctionality() {
-      return "...";
-    }
-  }
-
-  function ResourcePlugin({ ...props, context, children }) {
+const plugin = createPlugin((BaseDataStore) => {
+  function ResourceHook({ ...props, context, children }) {
     return (
       <ReactComponent>
-        {children({ ...context, extendedContext: true })}
+        {children({ ...context, extendedContext: 123 })}
       </ReactComponent>
     );
   }
 
-  extend.resource(ResourcePlugin);
+  class ExtendedDataStore extends BaseDataStore {
+    extend(extend) {
+      // This is necessary for the base class to work properly:
+      super.extend(extend);
 
-  return ExtendedStore;
+      // Register a Resource hook component
+      extend.resource(ResourceHook);
+    }
+
+    // ... custom DataStore functionality
+  }
+
+  return ExtendedDataStore;
 });
 
 const DataStoreWithPlugin = plugin(SomeDataStore);
@@ -462,22 +467,15 @@ import { createPlugin } from "@civet/core";
 
 ### Function arguments
 
-| Name             | Type                                                                                                 | Description           |
-| ---------------- | ---------------------------------------------------------------------------------------------------- | --------------------- |
-| pluginDefinition | `(BaseDataStore, extend: { resource: (ResourcePlugin) => void }) => void` &#124; `ExtendedDataStore` | The plugin definition |
+| Name             | Type                                      | Description                                                  |
+| ---------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| pluginDefinition | `(BaseDataStore: DataStore) => DataStore` | A function that returns an extended version of BaseDataStore |
 
 ### Return type
 
-| Type                       | Description                                                                                                                |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `(DataStore) => DataStore` | A plugin function which creates a modified version of the provided [`DataStore`](#datastore) with the plugin functionality |
-
-### Caveats
-
-#### Independence
-
-All plugins should be independent of each other.
-It should be noted that the order in which the individual plugins are executed is not guaranteed.
+| Type                       | Description |
+| -------------------------- | ----------- |
+| `(DataStore) => DataStore` | The plugin  |
 
 ## `compose`
 
