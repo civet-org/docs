@@ -323,10 +323,10 @@ import { DataStore } from "@civet/core";
 
 ### Class members
 
-| Name                        | Arguments                        | Return Type | Description                                                                                                                                           |
-| --------------------------- | -------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| recycleItemsCompareIdentity | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if `nextItem` and `prevItem` reference the same item. (You can do so by comparing IDs or similar if available)                          |
-| recycleItemsIsUnchanged     | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if the item was not changed at all, e.g. both versions are completely equal. (You can do so by comparing ETags or similar if available) |
+| Name                         | Arguments                        | Return Type | Description                                                                                                                                           |
+| ---------------------------- | -------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recycleItemsUniqueIdentifier | item: `any`                      | `string`    | Should return a string which is uniquely identifying the same item accross multiple requests.                                                         |
+| recycleItemsIsUnchanged      | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if the item was not changed at all, e.g. both versions are completely equal. (You can do so by comparing ETags or similar if available) |
 
 ### Caveats
 
@@ -360,8 +360,8 @@ As a result, the following checks should succeed:
   - if an item differs (compared by value): `prevItem !== nextItem`
   - else (even if it was reordered in the array): `prevItem === nextItem`
 
-However, the default implementation may be expensive in regard to performance as it deeply compares each item by value.
-This is why, if possible, you should improve it with a faster comparing approach by overriding the methods `recycleItemsCompareIdentity` and `recycleItemsIsUnchanged`. You can also completely ditch the default implementation by implementing your own version of `recycleItems`.
+However, the default implementation may be expensive in regard to performance and may be inaccurate as it creates a hash over each item as its unique identifiers.
+This is why, if possible, you should improve it with a faster comparing approach by overriding the methods `recycleItemsUniqueIdentifier` and `recycleItemsIsUnchanged`. You can also completely ditch the default implementation by implementing your own version of `recycleItems` which may be required if you cannot build a unique identifier.
 
 ## `isDataStore`
 
@@ -687,14 +687,14 @@ import { Meta } from "@civet/core";
 
 ### Class members
 
-| Name    | Arguments                   | Return Type                     | Description                                                                                                                                       |
-| ------- | --------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| clear   |                             | `void`                          | Delete all keys from the object                                                                                                                   |
-| delete  | key: `string`               | `any`                           | Delete the specified key from the object - returns the deleted value                                                                              |
-| entries |                             | `([key: string, value: any])[]` | Get all entries from the object                                                                                                                   |
-| get     | key: `string`               | `any`                           | Get the value for the specified key from the object                                                                                               |
-| has     | key: `string`               | `boolean`                       | Check if the object has a value for the specified key                                                                                             |
-| keys    |                             | `string[]`                      | Get all keys from the object                                                                                                                      |
-| set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                               |
-| values  |                             | `any[]`                         | Get all values from the object                                                                                                                    |
-| commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a copy of the current value, or `prev` if it is set and matches the current object by value |
+| Name    | Arguments                   | Return Type                     | Description                                                                                                                                                                                                 |
+| ------- | --------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| clear   |                             | `void`                          | Delete all keys from the object                                                                                                                                                                             |
+| delete  | key: `string`               | `any`                           | Delete the specified key from the object - returns the deleted value                                                                                                                                        |
+| entries |                             | `([key: string, value: any])[]` | Get all entries from the object                                                                                                                                                                             |
+| get     | key: `string`               | `any`                           | Get the value for the specified key from the object                                                                                                                                                         |
+| has     | key: `string`               | `boolean`                       | Check if the object has a value for the specified key                                                                                                                                                       |
+| keys    |                             | `string[]`                      | Get all keys from the object                                                                                                                                                                                |
+| set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                                                                                         |
+| values  |                             | `any[]`                         | Get all values from the object                                                                                                                                                                              |
+| commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a deep copy of the current value, or `prev` if it is set and matches the current object by value. Note that only JSON-compliant values are respected. |
