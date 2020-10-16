@@ -334,8 +334,8 @@ import { DataStore } from "@civet/core";
 
 React offers tools to avoid unnecessary component updates, including `React.Component.shouldComponentUpdate`, `React.PureComponent` and `React.memo`.
 These tools check whether the props of a component have changed since the previous render to determine if the component needs to be updated again.
-The fastest way to do this would be to use JavaScript's identity operator `===`.
-This operator works great for primitives like strings or numbers, but doesn't work like we would expect it to with objects and arrays.
+The fastest way to achieve this would be to use `Object.is`, which behaves like JavaScript's strict comparison operator `===` except for a few differences.
+This function works great for primitives like strings or numbers, but doesn't work like we would expect it to when used with objects and arrays.
 This is because objects and arrays (which in fact are objects as well) are compared by their memory addresses instead of their contents. See the example below:
 
 ```js
@@ -663,12 +663,15 @@ const baseMeta = new Meta(base);
 baseMeta.set("test", 1);
 assert(base.test === baseMeta.get("test"));
 
-// Meta can handle basic immutability
-const previousMeta = { a: 1 };
-const unchanged = new Meta({ a: 1 });
-const changed = new Meta({ a: 2 });
-assert(previousMeta === unchanged.commit(previousMeta));
-assert(previousMeta !== changed.commit(previousMeta));
+// Meta can create (shallowly) immutable snapshots.
+const previous = { a: 1 };
+const meta = new Meta();
+meta.set("a", 1);
+const unchanged = meta.commit(previous);
+meta.set("a", 2);
+const changed = meta.commit(previous);
+assert(previous === unchanged);
+assert(previous !== changed);
 ```
 
 <!--Import-->
@@ -687,14 +690,23 @@ import { Meta } from "@civet/core";
 
 ### Class members
 
-| Name    | Arguments                   | Return Type                     | Description                                                                                                                                                                                                 |
-| ------- | --------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| clear   |                             | `void`                          | Delete all keys from the object                                                                                                                                                                             |
-| delete  | key: `string`               | `any`                           | Delete the specified key from the object - returns the deleted value                                                                                                                                        |
-| entries |                             | `([key: string, value: any])[]` | Get all entries from the object                                                                                                                                                                             |
-| get     | key: `string`               | `any`                           | Get the value for the specified key from the object                                                                                                                                                         |
-| has     | key: `string`               | `boolean`                       | Check if the object has a value for the specified key                                                                                                                                                       |
-| keys    |                             | `string[]`                      | Get all keys from the object                                                                                                                                                                                |
-| set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key                                                                                                                                                                         |
-| values  |                             | `any[]`                         | Get all values from the object                                                                                                                                                                              |
-| commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a deep copy of the current value, or `prev` if it is set and matches the current object by value. Note that only JSON-compliant values are respected. |
+| Name    | Arguments                   | Return Type                     | Description                                                                                                                            |
+| ------- | --------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| clear   |                             | `void`                          | Delete all keys from the object                                                                                                        |
+| delete  | key: `string`               | `any`                           | Delete the specified key from the object - returns the deleted value                                                                   |
+| entries |                             | `([key: string, value: any])[]` | Get all entries from the object                                                                                                        |
+| get     | key: `string`               | `any`                           | Get the value for the specified key from the object                                                                                    |
+| has     | key: `string`               | `boolean`                       | Check if the object has a value for the specified key                                                                                  |
+| keys    |                             | `string[]`                      | Get all keys from the object                                                                                                           |
+| set     | key: `string`, value: `any` | `void`                          | Set the value for the specified key. Make sure that values are immutable!                                                              |
+| values  |                             | `any[]`                         | Get all values from the object                                                                                                         |
+| commit  | prev: `object`              | `object`                        | Get the object as a plain JavaScript object - returns a shallow copy of the current value, or `prev` if provided and if all keys match |
+
+### Caveats
+
+#### Immutability
+
+Meta does NOT make sure that the values you provide are immutable.
+If you mutate an array or object which you previously passed to a Meta object, the change is also reflected in this Meta object, even when committed.
+Commit only creates a shallow copy of the base object.
+To guarantee that your values are truely immutable, it is recommended to use a library like immer or Immutable.js.
