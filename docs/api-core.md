@@ -125,8 +125,8 @@ import { Resource } from "@civet/core";
 | Name       | Type                      | Description                                                                                                                                              |
 | ---------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | name       | `string` **(required)**   | Resource name                                                                                                                                            |
-| ids        | `any[]`                   | IDs to be queried (in place of `query`)                                                                                                                  |
-| query      | `any`                     | Query filter (in place of `ids`)                                                                                                                         |
+| ids        | `any[]`                   | IDs to be queried                                                                                                                                        |
+| query      | `any`                     | Query filter                                                                                                                                             |
 | empty      | `boolean`                 | Whether to prevent fetching data                                                                                                                         |
 | options    | `object`                  | [`DataStore`](#datastore) options for requests                                                                                                           |
 | dataStore  | [`DataStore`](#datastore) | [`DataStore`](#datastore) to be used for requests                                                                                                        |
