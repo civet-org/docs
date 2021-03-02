@@ -308,7 +308,7 @@ When a `get` request is made by a [`<Resource>`](#resource) component, the `meta
 
 - Its contents are published to the consumers of the [`<Resource>`](#resource) via the [Resource context](#resourceprovider).
 - Its contents are preserved between multiple revisions of a request and thereas can be used to provide information to subsequent queries or utility functions like `transition` or `recycleItems`. When the [`<Resource>`](#resource) is in persistent mode, the information is also preserved between multiple requests.
-- The special key `persistant` (`meta.set('persistent', true)`) can be used to force the Resource's persistent state. This can be especially useful when the persistant state is required for performance optimizations.
+- The special key `persistant` (e.g. `meta.set('persistent', true)`) can be used to force the Resource's persistent state. This can be especially useful when the persistant state is required for performance optimizations. It takes the same values as [`<Resource>`](#resource)'s `persistent` prop.
 
 As the contents of `meta` may be preserved between multiple requests or revisions, it may be necessary to clean it up in your DataStore's `get` function. Please see [`Meta`](#meta) for more information.
 
