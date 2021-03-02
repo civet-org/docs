@@ -122,15 +122,15 @@ import { Resource } from "@civet/core";
 
 ### Props
 
-| Name       | Type                      | Description                                                                                                                                              |
-| ---------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name       | `string` **(required)**   | Resource name                                                                                                                                            |
-| ids        | `any[]`                   | IDs to be queried                                                                                                                                        |
-| query      | `any`                     | Query filter                                                                                                                                             |
-| empty      | `boolean`                 | Whether to prevent fetching data                                                                                                                         |
-| options    | `object`                  | [`DataStore`](#datastore) options for requests                                                                                                           |
-| dataStore  | [`DataStore`](#datastore) | [`DataStore`](#datastore) to be used for requests                                                                                                        |
-| persistent | `boolean` &#124; `"very"` | Whether stale data should be retained during the next request - this only applies if neither `dataStore` nor `name` have changed, unless set to `"very"` |
+| Name       | Type                      | Description                                                                                                                                                                                      |
+| ---------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| name       | `string` **(required)**   | Resource name                                                                                                                                                                                    |
+| ids        | `any[]`                   | IDs to be queried                                                                                                                                                                                |
+| query      | `any`                     | Query filter                                                                                                                                                                                     |
+| empty      | `boolean`                 | Whether to prevent fetching data                                                                                                                                                                 |
+| options    | `object`                  | [`DataStore`](#datastore) options for requests                                                                                                                                                   |
+| dataStore  | [`DataStore`](#datastore) | [`DataStore`](#datastore) to be used for requests                                                                                                                                                |
+| persistent | `boolean` &#124; `"very"` | Whether stale data should be retained during the next request - this only applies if neither `dataStore` nor `name` have changed, unless set to `"very"` where also `name` changes are preserved |
 
 ### Context
 
@@ -297,7 +297,20 @@ You can implement your DataStore to support continuous data fetching by returnin
 This allows you to forward partial data to the Resource component (or other compatible clients) even if the fetch has not yet been completed.
 
 It can be helpful to allow a transition between several updates of the component, e.g. to keep the order of the elements while the retrieval is still running.
-The `Resource` component supports this by calling the `DataStore`'s `transition` method each time it resolves new data. The function is called before `recycleItems`, so you don't have to worry about it when implementing the transition.
+The `<Resource>` component supports this by calling the `DataStore`'s `transition` method each time it resolves new data. The function is called before `recycleItems`, so you don't have to worry about it when implementing the transition.
+
+#### Metadata
+
+The `meta` attribute provided to `DataStore`'s functions can have multiple applications.
+It is an interface which can be used to pass additional meta information beside the actual data to its underlying consumers.
+
+When a `get` request is made by a [`<Resource>`](#resource) component, the `meta` object has the following functions:
+
+- Its contents are published to the consumers of the [`<Resource>`](#resource) via the [Resource context](#resourceprovider).
+- Its contents are preserved between multiple revisions of a request and thereas can be used to provide information to subsequent queries or utility functions like `transition` or `recycleItems`. When the [`<Resource>`](#resource) is in persistent mode, the information is also preserved between multiple requests.
+- The special key `persistant` (`meta.set('persistent', true)`) can be used to force the Resource's persistent state. This can be especially useful when the persistant state is required for performance optimizations.
+
+As the contents of `meta` may be preserved between multiple requests or revisions, it may be necessary to clean it up in your DataStore's `get` function. Please see [`Meta`](#meta) for more information.
 
 ## `DataStore`
 
@@ -332,6 +345,10 @@ import { DataStore } from "@civet/core";
 | recycleItemsIsUnchanged      | nextItem: `any`, prevItem: `any` | `boolean`   | Return `true` if the item was not changed at all, e.g. both versions are completely equal. (You can do so by comparing ETags or similar if available) |
 
 ### Caveats
+
+#### BaseDataStore
+
+Please note that `DataStore` is an implementation of [`BaseDataStore`](#basedatastore), so make sure to check the Caveats section there, too.
 
 #### recycleItems
 
