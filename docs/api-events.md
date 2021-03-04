@@ -194,15 +194,15 @@ import { EventReceiver } from "@civet/events";
 
 ### Class members
 
-| Name      | Arguments                                                              | Return Type               | Description         |
-| --------- | ---------------------------------------------------------------------- | ------------------------- | ------------------- |
-| subscribe | resource: `object`, options: `object`, handler: `(event: any) => void` | unsubscribe: `() => void` | Subscribe to events |
+| Name      | Arguments                                                                 | Return Type               | Description         |
+| --------- | ------------------------------------------------------------------------- | ------------------------- | ------------------- |
+| subscribe | resource: `object`, options: `object`, handler: `(events: any[]) => void` | unsubscribe: `() => void` | Subscribe to events |
 
 ### Abstract members
 
-| Name            | Arguments                                                              | Return Type               | Description |
-| --------------- | ---------------------------------------------------------------------- | ------------------------- | ----------- |
-| handleSubscribe | resource: `object`, options: `object`, handler: `(event: any) => void` | unsubscribe: `() => void` |             |
+| Name            | Arguments                                                                 | Return Type               | Description |
+| --------------- | ------------------------------------------------------------------------- | ------------------------- | ----------- |
+| handleSubscribe | resource: `object`, options: `object`, handler: `(events: any[]) => void` | unsubscribe: `() => void` |             |
 
 ### Caveats
 
