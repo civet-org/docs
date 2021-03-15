@@ -184,6 +184,7 @@ import { ResourceProvider } from "@civet/core";
 | isEmpty      | `boolean`                 | Whether fetching data is prevented                                                                |
 | isLoading    | `boolean`                 | Whether another query is currently being executed                                                 |
 | isIncomplete | `boolean`                 | Whether the current query is still being executed                                                 |
+| isInitial    | `boolean`                 | Whether the current query is the first non failing query                                          |
 | isStale      | `boolean`                 | Whether the current data is stale                                                                 |
 | notify       | `() => void`              | Callback to reload the current request                                                            |
 
